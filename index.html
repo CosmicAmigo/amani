@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMANI - You're Not Your Addiction</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<div class="splash">
+<h1>AMANI</h1>
+<p>You're Not Your Addiction</p>
+</div>
+<div class="header">
+<div class="title">AMANI</div>
+<div class="subtitle">You're Not Your Addiction</div>
+</div>
+<div class="content active" id="onboarding">
+<h3>Welcome.</h3>
+<p>Your private recovery companion.</p>
+<button class="button" onclick="goHome()">Enter</button>
+</div>
+<div class="content" id="home">
+<button class="button highlight" onclick="openChat()">💬 Talk to AMANI</button>
+<button class="button counsellor-btn highlight" onclick="talkToCounsellor()">👤 Talk to a Counsellor</button>
+<button class="button" onclick="openProgress()">📊 My Progress</button>
+<button class="button" onclick="openFriendZone()">🤝 Friend Zone</button>
+<button class="button panic-btn highlight" onclick="activatePanic()">🆘 Panic Button</button>
+</div>
+<div class="content" id="chat">
+<div class="chat-box" id="chatBox"></div>
+<div class="typing" id="typingIndicator">AMANI is typing...</div>
+<div class="quick-replies">
+<button onclick="quickReply('I feel stressed')">I feel stressed</button>
+<button onclick="quickReply('I feel happy')">I feel happy</button>
+<button onclick="quickReply('I am struggling')">I am struggling</button>
+</div>
+<div class="input-row">
+<input type="text" id="userInput" placeholder="Type how you feel..." />
+<button class="button" onclick="sendMessage()">Send</button>
+</div>
+<button class="button" onclick="goHome()">Back</button>
+</div>
+<div class="content" id="progress">
+<h3>Your Recovery Progress</h3>
+<div class="progress-card"><p>7-Day Streak</p><div class="progress-bar"><div class="progress-fill" style="width:70%"></div></div></div>
+<div class="progress-card"><p>Emotional Stability</p><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></div>
+<div class="progress-card"><p>Community Engagement</p><div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div></div>
+<button class="button" onclick="goHome()">Back</button>
+</div>
+<div class="content" id="friendZone">
+<h3>Friend Zone</h3>
+<ul class="friend-list" id="friendList">
+<li class="online">Alex 🟢</li>
+<li class="online">Sophia 🟢</li>
+<li class="online">Jordan 🔵</li>
+<li class="online">Riley 🟢</li>
+<li class="online">Casey 🔵</li>
+</ul>
+<button class="button" onclick="goHome()">Back</button>
+</div>
+<div class="content panic-screen" id="panic">
+<h2>Panic Mode Activated</h2>
+<p>Follow the circle. Inhale as it grows. Exhale as it shrinks.</p>
+<div class="breath-circle"></div>
+<p>You are safe right now.</p>
+<button class="button" onclick="goHome()">Return Home</button>
+</div>
+</div>
+<script>
+function hideAll(){['onboarding','home','chat','panic','progress','friendZone'].forEach(id=>document.getElementById(id).classList.remove('active'))}
+function goHome(){hideAll();document.getElementById('home').classList.add('active');}
+function openChat(){hideAll();document.getElementById('chat').classList.add('active');}
+function activatePanic(){hideAll();document.getElementById('panic').classList.add('active');}
+function openProgress(){hideAll();document.getElementById('progress').classList.add('active');animateProgress();}
+function openFriendZone(){hideAll();document.getElementById('friendZone').classList.add('active');animateFriends();}
+function showMotivation(msg){const popup=document.createElement('div');popup.className='motivation-popup';popup.innerText=msg;document.querySelector('.app').appendChild(popup);setTimeout(()=>popup.remove(),2000);}
+function sendMessage(){const input=document.getElementById('userInput');const chatBox=document.getElementById('chatBox');const typing=document.getElementById('typingIndicator');if(input.value.trim()==='')return;const userMsg=input.value;chatBox.innerHTML+=`<div class='message-user'>You: ${userMsg}</div>`;input.value='';typing.style.display='block';setTimeout(()=>{let aiReply="AMANI: I hear you. Can you tell me more?";const msg=userMsg.toLowerCase();if(msg.includes("relapse"))aiReply="AMANI (Crisis): Remember, you are safe. Take a deep breath.";else if(msg.includes("happy"))aiReply="AMANI: That's wonderful! Let's celebrate your progress.";else if(msg.includes("stressed"))aiReply="AMANI: I understand stress is tough. Try breathing with me.";chatBox.innerHTML+=`<div class='message-ai'>${aiReply}</div>`;chatBox.scrollTop=chatBox.scrollHeight;typing.style.display='none';showMotivation('Keep going! You’re doing great.');},1000);}
+function quickReply(msg){document.getElementById('userInput').value=msg;sendMessage();}
+function animateFriends(){const list=document.getElementById('friendList').children;let delay=0;for(let li of list){li.style.opacity=0;li.style.transform='translateY(10px)';setTimeout(()=>{li.classList.add('online');},delay);delay+=200;}}
+function animateProgress(){document.querySelectorAll('.progress-fill').forEach((bar,index)=>{bar.style.width=['70%','60%','50%'][index];});}
+function talkToCounsellor(){alert('Demo: Connecting to a counsellor...\nIf online, chat will start; if offline, schedule priority follow-up.');}
+// Auto-run Investor Mode
+setTimeout(()=>{openChat(); setTimeout(()=>{activatePanic(); setTimeout(()=>{openProgress(); setTimeout(()=>{openFriendZone();},2000);},3000);},3000);},4000);
+</script>
+</body>
+</html>
