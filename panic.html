@@ -1,13 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panic Mode - AMANI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    
-</body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="content panic-screen" id="panic">
+      <h2>Panic Mode Activated</h2>
+      <p>Follow the circle. Inhale as it grows. Exhale as it shrinks.</p>
+      <div class="breath-circle"></div>
+      <p>You are safe right now.</p>
+      <button class="button" onclick="goHome()">Return Home</button>
+    </div>
+        <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

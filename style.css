@@ -1,40 +1,299 @@
-body { margin:0; font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#e0f7f5,#dff5f9); display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
-.app { width:375px; height:780px; background: rgba(255,255,255,0.95); border-radius:30px; box-shadow:0 25px 60px rgba(0,0,0,0.15); overflow:hidden; display:flex; flex-direction:column; position:relative; }
-.header { padding:20px; text-align:center; background: linear-gradient(135deg,#00c6ff,#0072ff); color:white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index:5; }
-.title { font-size:32px; font-weight:700; }
-.subtitle { font-size:16px; margin-top:5px; opacity:0.9; font-style:italic; }
-.content { flex:1; padding:20px; overflow-y:auto; position:absolute; width:100%; height:calc(100% - 80px); top:80px; left:100%; opacity:0; transition: all 0.5s ease, opacity 0.5s ease; z-index:1; background: transparent; }
-.content.active { left:0; opacity:1; z-index:2; }
-.button { background: linear-gradient(90deg, #00c6ff, #0072ff); color:white; font-weight:600; padding:14px; border-radius:30px; margin:10px 0; width:100%; cursor:pointer; border:none; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; }
-.button:hover { transform: scale(1.03); box-shadow:0 10px 20px rgba(0,0,0,0.15); }
-.panic-btn { background:#ff6b6b; }
-.counsellor-btn { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
-.splash { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10; background: linear-gradient(135deg,#00c6ff,#0072ff); color:white; animation: fadeOut 2.5s forwards; animation-delay:3s; }
-@keyframes fadeOut { to { opacity:0; visibility:hidden; } }
-.splash h1{ font-size:38px; font-weight:700; animation: popIn 1s ease forwards; }
-.splash p{ font-size:16px; margin-top:5px; animation: fadeIn 1s ease forwards; }
-@keyframes popIn { 0%{transform: scale(0.5);} 100%{transform: scale(1);} }
-@keyframes fadeIn { 0%{opacity:0;} 100%{opacity:1;} }
-.chat-box { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius:25px; padding:15px; height:250px; overflow-y:auto; box-shadow:0 8px 20px rgba(0,0,0,0.1); margin-bottom:10px; }
-.message-user { text-align:right; margin:5px 0; color:#444; opacity:0; animation: fadeMessage 0.4s forwards; }
-.message-ai { text-align:left; margin:5px 0; color:#0072ff; opacity:0; animation: fadeMessage 0.4s forwards; }
-@keyframes fadeMessage { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-.input-row { display:flex; gap:5px; }
-input { flex:1; padding:12px; border-radius:20px; border:1px solid #ddd; }
-.panic-screen { text-align:center; background:#fff0f0; padding-top:30px; height:100%; transition: all 0.3s ease; overflow-y:auto; }
-.breath-circle { width:140px; height:140px; border-radius:50%; background:#00c6ff; margin:20px auto; animation: breathe 4s infinite ease-in-out; box-shadow:0 0 30px rgba(0,198,255,0.3); }
-@keyframes breathe { 0%{transform:scale(1);opacity:0.7;} 50%{transform:scale(1.6);opacity:1;} 100%{transform:scale(1);opacity:0.7;} }
-.progress-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding:15px; border-radius:20px; margin:10px 0; box-shadow:0 5px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; }
-.progress-bar { height:12px; border-radius:10px; background:#e0f0f0; overflow:hidden; }
-.progress-fill { height:100%; background:linear-gradient(90deg,#00c6ff,#0072ff); width:0%; transition: width 1s ease; }
-.friend-list { list-style:none; padding:0; }
-.friend-list li { padding:12px; background:rgba(0,198,255,0.1); margin:6px 0; border-radius:15px; transition: all 0.3s ease; cursor:pointer; opacity:0; transform:translateY(10px); }
-.friend-list li.online { opacity:1; transform:translateY(0); }
-.friend-list li:hover { transform: scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.1); }
-.quick-replies { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-.quick-replies button { flex:1; min-width:100px; }
-.highlight { animation: highlightBtn 1s infinite alternate; }
-@keyframes highlightBtn { 0%{box-shadow:0 5px 15px rgba(0,0,0,0.1);} 100%{box-shadow:0 10px 25px rgba(0,198,255,0.4); transform: scale(1.05);} }
-.typing { font-style: italic; color:#999; opacity:0.7; }
-.motivation-popup { position:absolute; top:20px; left:50%; transform:translateX(-50%); background:#00c6ff; color:white; padding:10px 20px; border-radius:20px; box-shadow:0 5px 15px rgba(0,0,0,0.2); opacity:0; animation: popupAnim 0.5s forwards; z-index:15; }
-@keyframes popupAnim { 0%{opacity:0; transform:translate(-50%, -20px);} 100%{opacity:1; transform:translate(-50%,0);} }
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #e0f7f5, #dff5f9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+.app {
+  width: 375px;
+  height: 780px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 30px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.header {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+.title {
+  font-size: 32px;
+  font-weight: 700;
+}
+.subtitle {
+  font-size: 16px;
+  margin-top: 5px;
+  opacity: 0.9;
+  font-style: italic;
+}
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 80px);
+  top: 80px;
+  left: 100%;
+  opacity: 0;
+  transition:
+    all 0.5s ease,
+    opacity 0.5s ease;
+  z-index: 1;
+  background: transparent;
+}
+.content.active {
+  left: 0;
+  opacity: 1;
+  z-index: 2;
+}
+.button {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: white;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 30px;
+  margin: 10px 0;
+  width: 100%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+.panic-btn {
+  background: #ff6b6b;
+}
+.counsellor-btn {
+  background: linear-gradient(90deg, #9b59b6, #8e44ad);
+}
+.splash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  animation: fadeOut 2.5s forwards;
+  animation-delay: 3s;
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.splash h1 {
+  font-size: 38px;
+  font-weight: 700;
+  animation: popIn 1s ease forwards;
+}
+.splash p {
+  font-size: 16px;
+  margin-top: 5px;
+  animation: fadeIn 1s ease forwards;
+}
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.chat-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  padding: 15px;
+  height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+.message-user {
+  text-align: right;
+  margin: 5px 0;
+  color: #444;
+  opacity: 0;
+  animation: fadeMessage 0.4s forwards;
+}
+.message-ai {
+  text-align: left;
+  margin: 5px 0;
+  color: #0072ff;
+  opacity: 0;
+  animation: fadeMessage 0.4s forwards;
+}
+@keyframes fadeMessage {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.input-row {
+  display: flex;
+  gap: 5px;
+}
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+}
+.panic-screen {
+  text-align: center;
+  background: #fff0f0;
+  padding-top: 30px;
+  height: 100%;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+}
+.breath-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #00c6ff;
+  margin: 20px auto;
+  animation: breathe 4s infinite ease-in-out;
+  box-shadow: 0 0 30px rgba(0, 198, 255, 0.3);
+}
+@keyframes breathe {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+.progress-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+.progress-bar {
+  height: 12px;
+  border-radius: 10px;
+  background: #e0f0f0;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  width: 0%;
+  transition: width 1s ease;
+}
+.friend-list {
+  list-style: none;
+  padding: 0;
+}
+.friend-list li {
+  padding: 12px;
+  background: rgba(0, 198, 255, 0.1);
+  margin: 6px 0;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+}
+.friend-list li.online {
+  opacity: 1;
+  transform: translateY(0);
+}
+.friend-list li:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.quick-replies {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.quick-replies button {
+  flex: 1;
+  min-width: 100px;
+}
+.highlight {
+  animation: highlightBtn 1s infinite alternate;
+}
+@keyframes highlightBtn {
+  0% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    box-shadow: 0 10px 25px rgba(0, 198, 255, 0.4);
+    transform: scale(1.05);
+  }
+}
+.typing {
+  font-style: italic;
+  color: #999;
+  opacity: 0.7;
+}
+.motivation-popup {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #00c6ff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  animation: popupAnim 0.5s forwards;
+  z-index: 15;
+}
+@keyframes popupAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
