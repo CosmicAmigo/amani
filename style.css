@@ -2,29 +2,28 @@ body {
   margin: 0;
   font-family: "Inter", sans-serif;
   background: linear-gradient(135deg, #e0f7f5, #dff5f9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
+  display: block;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 .app {
-  width: 375px;
-  height: 780px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 30px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  width: auto;
+  max-width: 100%;
+  min-height: auto;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  display: block;
   position: relative;
+  padding: 24px;
 }
 .header {
   padding: 20px;
   text-align: center;
   background: linear-gradient(135deg, #00c6ff, #0072ff);
   color: white;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   z-index: 5;
 }
 .title {
@@ -39,24 +38,22 @@ body {
 }
 .content {
   flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  position: absolute;
-  width: 100%;
-  height: calc(100% - 80px);
-  top: 80px;
-  left: 100%;
-  opacity: 0;
-  transition:
-    all 0.5s ease,
-    opacity 0.5s ease;
+  padding: 20px 0;
+  overflow: visible;
+  position: relative;
+  width: auto;
+  height: auto;
+  top: auto;
+  left: auto;
+  opacity: 1;
+  transition: none;
   z-index: 1;
   background: transparent;
 }
 .content.active {
-  left: 0;
+  left: auto;
   opacity: 1;
-  z-index: 2;
+  z-index: 1;
 }
 .button {
   background: linear-gradient(90deg, #00c6ff, #0072ff);
@@ -68,10 +65,8 @@ body {
   width: 100%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  box-shadow: none;
+  transition: transform 0.2s;
 }
 .button:hover {
   transform: scale(1.03);
@@ -135,7 +130,7 @@ body {
   padding: 15px;
   height: 250px;
   overflow-y: auto;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   margin-bottom: 10px;
 }
 .message-user {
@@ -209,7 +204,7 @@ input {
   padding: 15px;
   border-radius: 20px;
   margin: 10px 0;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
   transition: all 0.3s ease;
 }
 .progress-bar {
@@ -244,7 +239,7 @@ input {
 }
 .friend-list li:hover {
   transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 .quick-replies {
   display: flex;
@@ -261,10 +256,10 @@ input {
 }
 @keyframes highlightBtn {
   0% {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
   }
   100% {
-    box-shadow: 0 10px 25px rgba(0, 198, 255, 0.4);
+    box-shadow: none;
     transform: scale(1.05);
   }
 }
@@ -282,7 +277,7 @@ input {
   color: white;
   padding: 10px 20px;
   border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   opacity: 0;
   animation: popupAnim 0.5s forwards;
   z-index: 15;
