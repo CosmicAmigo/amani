@@ -11,13 +11,19 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="content panic-screen" id="panic">
-      <h2>Panic Mode Activated</h2>
-      <p>Follow the circle. Inhale as it grows. Exhale as it shrinks.</p>
-      <div class="breath-circle"></div>
-      <p>You are safe right now.</p>
-      <button class="button" onclick="goHome()">Return Home</button>
+    <div class="app">
+      <div class="header">
+        <div class="title">AMANI</div>
+        <div class="subtitle">Panic Mode</div>
+      </div>
+      <div class="content active panic-screen" id="panic">
+        <h2>Panic Mode Activated</h2>
+        <p>Follow the circle. Inhale as it grows. Exhale as it shrinks.</p>
+        <div class="breath-circle"></div>
+        <p>You are safe right now.</p>
+        <button class="button" onclick="goHome()">Return Home</button>
+      </div>
     </div>
-        <script type="module" src="/src/main.js"></script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

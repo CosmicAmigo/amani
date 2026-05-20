@@ -4,23 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat - AMANI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="content" id="chat">
-      <div class="chat-box" id="chatBox"></div>
-      <div class="typing" id="typingIndicator">AMANI is typing...</div>
-      <div class="quick-replies">
-        <button onclick="quickReply('I feel stressed')">I feel stressed</button>
-        <button onclick="quickReply('I feel happy')">I feel happy</button>
-        <button onclick="quickReply('I am struggling')">I am struggling</button>
+    <div class="app">
+      <div class="header">
+        <div class="title">AMANI</div>
+        <div class="subtitle">Talk to AMANI</div>
       </div>
-      <div class="input-row">
-        <input type="text" id="userInput" placeholder="Type how you feel..." />
-        <button class="button" onclick="sendMessage()">Send</button>
+      <div class="content active" id="chat">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="typing" id="typingIndicator">AMANI is typing...</div>
+        <div class="quick-replies">
+          <button onclick="quickReply('I feel stressed')">
+            I feel stressed
+          </button>
+          <button onclick="quickReply('I feel happy')">I feel happy</button>
+          <button onclick="quickReply('I am struggling')">
+            I am struggling
+          </button>
+        </div>
+        <div class="input-row">
+          <input
+            type="text"
+            id="userInput"
+            placeholder="Type how you feel..."
+          />
+          <button class="button" onclick="sendMessage()">Send</button>
+        </div>
+        <button class="button" onclick="goHome()">Back</button>
       </div>
-      <button class="button" onclick="goHome()">Back</button>
     </div>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

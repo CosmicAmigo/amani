@@ -1,44 +1,40 @@
-function hideAll() {
-  ["onboarding", "home", "chat", "panic", "progress", "friendZone"].forEach(
-    (id) => {
-      const element = document.getElementById(id);
-      if (element) element.classList.remove("active");
-    },
-  );
+import { initDatabase } from "./database.js";
+
+let dbInstance = null;
+
+async function initializeApp() {
+  try {
+    dbInstance = await initDatabase();
+  } catch (error) {
+    console.warn("Database initialization failed:", error);
+  }
 }
 
 function goHome() {
-  hideAll();
-  document.getElementById("home").classList.add("active");
+  window.location.href = "home.html";
 }
 
 function openChat() {
-  hideAll();
-  document.getElementById("chat").classList.add("active");
+  window.location.href = "chat.html";
 }
 
 function activatePanic() {
-  hideAll();
-  document.getElementById("panic").classList.add("active");
+  window.location.href = "panic.html";
 }
 
 function openProgress() {
-  hideAll();
-  document.getElementById("progress").classList.add("active");
-  animateProgress();
+  window.location.href = "progress.html";
 }
 
 function openFriendZone() {
-  hideAll();
-  document.getElementById("friendZone").classList.add("active");
-  animateFriends();
+  window.location.href = "friends.html";
 }
 
 function showMotivation(msg) {
   const popup = document.createElement("div");
   popup.className = "motivation-popup";
   popup.innerText = msg;
-  document.querySelector(".app").appendChild(popup);
+  document.querySelector(".app")?.appendChild(popup);
   setTimeout(() => popup.remove(), 2000);
 }
 
@@ -111,3 +107,11 @@ window.openFriendZone = openFriendZone;
 window.quickReply = quickReply;
 window.sendMessage = sendMessage;
 window.talkToCounsellor = talkToCounsellor;
+
+window.addEventListener("DOMContentLoaded", () => {
+  const page = window.location.pathname.split("/").pop();
+  if (page === "progress.html") animateProgress();
+  if (page === "friends.html") animateFriends();
+});
+
+initializeApp();

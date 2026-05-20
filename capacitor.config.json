@@ -1,0 +1,9 @@
+{
+  "appId": "com.cosmicamigo.amani",
+  "appName": "AMANI",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SQLite": {}
+  }
+}
