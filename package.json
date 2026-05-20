@@ -2,7 +2,9 @@
   "name": "amani",
   "private": true,
   "dependencies": {
-    "@capacitor/core": "^8.3.3"
+    "@capacitor/core": "^8.3.3",
+    "@capacitor-community/sqlite": "^8.1.0",
+    "sql.js": "^1.14.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.3.3",
@@ -11,6 +13,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios"
   }
 }

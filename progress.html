@@ -8,28 +8,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-          <div class="content" id="progress">
-        <h3>Your Recovery Progress</h3>
-        <div class="progress-card">
-          <p>7-Day Streak</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 70%"></div>
-          </div>
+  <div class="app">
+    <div class="header">
+      <div class="title">AMANI</div>
+      <div class="subtitle">Progress</div>
+    </div>
+    <div class="content active" id="progress">
+      <h3>Your Recovery Progress</h3>
+      <div class="progress-card">
+        <p>7-Day Streak</p>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 70%"></div>
         </div>
-        <div class="progress-card">
-          <p>Emotional Stability</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 60%"></div>
-          </div>
-        </div>
-        <div class="progress-card">
-          <p>Community Engagement</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 50%"></div>
-          </div>
-        </div>
-        <button class="button" onclick="goHome()">Back</button>
       </div>
-    <script type="module" src="/src/main.js"></script>
+      <div class="progress-card">
+        <p>Emotional Stability</p>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%"></div>
+        </div>
+      </div>
+      <div class="progress-card">
+        <p>Community Engagement</p>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 50%"></div>
+        </div>
+      </div>
+      <button class="button" onclick="goHome()">Back</button>
+    </div>
+  </div>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>
