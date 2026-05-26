@@ -1,0 +1,38 @@
+-- Database schema for AMANI
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  email TEXT UNIQUE,
+  password_hash TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_login DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS friends (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  friend_id INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (friend_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS progress (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  date DATE,
+  metric TEXT,
+  value REAL,
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Existing journal table
+CREATE TABLE IF NOT EXISTS journal (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  entry TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
