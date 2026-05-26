@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lobby - AMANI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <div class="title">AMANI</div>
+        <div class="subtitle">Community Lobby</div>
+      </div>
+      <div class="content active">
+        <div id="googleSignIn"></div>
+        <p id="identityBadge"></p>
+
+        <label><input type="checkbox" id="anonymousToggle" checked /> Stay anonymous</label>
+
+        <div class="chat-box" id="lobbyMessages"></div>
+        <div class="input-row">
+          <input type="text" id="lobbyInput" placeholder="Share with the community..." />
+          <button class="button" onclick="sendLobbyMessage()">Send</button>
+        </div>
+        <button class="button" onclick="goHome()">Back</button>
+      </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

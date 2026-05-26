@@ -1,125 +1,103 @@
-import { initDatabase } from "./database.js";
-const express = require('express');
-const app = express();
+import { initDatabase, upsertUser, addLobbyMessage, getLobbyMessages } from "./database.js";
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 let dbInstance = null;
+let currentUser = null;
+
+function saveState() {
+  if (dbInstance) localStorage.setItem("amani-db", JSON.stringify(Array.from(dbInstance.export())));
+  if (currentUser) localStorage.setItem("amani-current-user", JSON.stringify(currentUser));
+}
 
 async function initializeApp() {
-  try {
-    dbInstance = await initDatabase();
-  } catch (error) {
-    console.warn("Database initialization failed:", error);
-  }
+  dbInstance = await initDatabase();
+  const userRaw = localStorage.getItem("amani-current-user");
+  if (userRaw) currentUser = JSON.parse(userRaw);
+
+  wireGlobalHandlers();
+  wireGoogleLogin();
+  renderLobbyMessages();
+  updateLobbyIdentityPreview();
 }
 
-function goHome() {
-  window.location.href = "home.html";
+function wireGlobalHandlers() {
+  window.goHome = () => (window.location.href = "home.html");
+  window.openChat = () => (window.location.href = "chat.html");
+  window.openLobby = () => (window.location.href = "lobby.html");
+  window.activatePanic = () => (window.location.href = "panic.html");
+  window.openProgress = () => (window.location.href = "progress.html");
+  window.openFriendZone = () => (window.location.href = "friends.html");
+
+  window.sendLobbyMessage = sendLobbyMessage;
 }
 
-function openChat() {
-  window.location.href = "chat.html";
+function wireGoogleLogin() {
+  const signInContainer = document.getElementById("googleSignIn");
+  if (!signInContainer || !GOOGLE_CLIENT_ID || !window.google?.accounts?.id) return;
+
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: (response) => {
+      const profile = parseJwt(response.credential);
+      currentUser = upsertUser(dbInstance, profile);
+      saveState();
+      updateLobbyIdentityPreview();
+    },
+  });
+
+  window.google.accounts.id.renderButton(signInContainer, {
+    theme: "outline",
+    size: "large",
+    width: "260",
+  });
 }
 
-function activatePanic() {
-  window.location.href = "panic.html";
+function parseJwt(token) {
+  const payload = token.split(".")[1];
+  return JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
 }
 
-function openProgress() {
-  window.location.href = "progress.html";
-}
-
-function openFriendZone() {
-  window.location.href = "friends.html";
-}
-
-function showMotivation(msg) {
-  const popup = document.createElement("div");
-  popup.className = "motivation-popup";
-  popup.innerText = msg;
-  document.querySelector(".app")?.appendChild(popup);
-  setTimeout(() => popup.remove(), 2000);
-}
-
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const chatBox = document.getElementById("chatBox");
-  const typing = document.getElementById("typingIndicator");
-
-  if (!input || !chatBox || !typing || input.value.trim() === "") return;
-
-  const userMsg = input.value;
-  chatBox.innerHTML += `<div class='message-user'>You: ${userMsg}</div>`;
-  input.value = "";
-  typing.style.display = "block";
-
-  setTimeout(() => {
-    let aiReply = "AMANI: I hear you. Can you tell me more?";
-    const msg = userMsg.toLowerCase();
-
-    if (msg.includes("relapse"))
-      aiReply = "AMANI (Crisis): Remember, you are safe. Take a deep breath.";
-    else if (msg.includes("happy"))
-      aiReply = "AMANI: That's wonderful! Let's celebrate your progress.";
-    else if (msg.includes("stressed"))
-      aiReply = "AMANI: I understand stress is tough. Try breathing with me.";
-
-    chatBox.innerHTML += `<div class='message-ai'>${aiReply}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-    typing.style.display = "none";
-    showMotivation("Keep going! You’re doing great.");
-  }, 1000);
-}
-
-function quickReply(msg) {
-  const input = document.getElementById("userInput");
+function sendLobbyMessage() {
+  const input = document.getElementById("lobbyInput");
+  const anonymousToggle = document.getElementById("anonymousToggle");
   if (!input) return;
-  input.value = msg;
-  sendMessage();
+
+  const message = input.value.trim();
+  if (!message) return;
+
+  const isAnonymous = anonymousToggle?.checked ?? true;
+  const displayName = isAnonymous ? "Anonymous" : currentUser?.name || "Guest";
+
+  addLobbyMessage(dbInstance, {
+    userId: currentUser?.id,
+    displayName,
+    isAnonymous,
+    message,
+  });
+
+  input.value = "";
+  renderLobbyMessages();
 }
 
-function animateFriends() {
-  const list = document.getElementById("friendList");
+function updateLobbyIdentityPreview() {
+  const badge = document.getElementById("identityBadge");
+  if (!badge) return;
+  badge.textContent = currentUser
+    ? `Signed in: ${currentUser.name || currentUser.email}`
+    : "Not signed in (you can still post anonymously)";
+}
+
+function renderLobbyMessages() {
+  const list = document.getElementById("lobbyMessages");
   if (!list) return;
-  let delay = 0;
-  Array.from(list.children).forEach((li) => {
-    li.style.opacity = 0;
-    li.style.transform = "translateY(10px)";
-    setTimeout(() => li.classList.add("online"), delay);
-    delay += 200;
-  });
+
+  const rows = getLobbyMessages(dbInstance);
+  list.innerHTML = rows
+    .map(
+      (row) => `<div class="message-ai"><strong>${row.display_name}:</strong> ${row.message}</div>`,
+    )
+    .join("");
+  list.scrollTop = list.scrollHeight;
 }
 
-function animateProgress() {
-  document.querySelectorAll(".progress-fill").forEach((bar, index) => {
-    bar.style.width = ["70%", "60%", "50%"][index];
-  });
-}
-
-function talkToCounsellor() {
-  alert(
-    "Demo: Connecting to a counsellor...\nIf online, chat will start; if offline, schedule priority follow-up.",
-  );
-}
-
-window.goHome = goHome;
-window.openChat = openChat;
-window.activatePanic = activatePanic;
-window.openProgress = openProgress;
-window.openFriendZone = openFriendZone;
-window.quickReply = quickReply;
-window.sendMessage = sendMessage;
-window.talkToCounsellor = talkToCounsellor;
-
-window.addEventListener("DOMContentLoaded", () => {
-  const page = window.location.pathname.split("/").pop();
-  if (page === "progress.html") animateProgress();
-  if (page === "friends.html") animateFriends();
-});
-
-initializeApp();
+window.addEventListener("DOMContentLoaded", initializeApp);
