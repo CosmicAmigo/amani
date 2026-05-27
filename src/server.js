@@ -50,10 +50,6 @@ async function initializeDatabase() {
   pool = mysql.createPool(poolOptions);
 }
 
-// ==========================================
-// STANDARD DATABASE API ROUTES
-// ==========================================
-
 // Get user profile
 app.get("/api/users/:userId", async (req, res) => {
   try {
@@ -262,9 +258,7 @@ app.delete("/api/users/:userId/streaks/:streakId", async (req, res) => {
     const connection = await pool.getConnection();
 
     await connection.execute(
-      `UPDATE abstinence_streaks 
-       SET is_active = 0
-       WHERE id = ? AND user_id = ?`,
+      `UPDATE abstinence_streaks \n       SET is_active = 0\n       WHERE id = ? AND user_id = ?`,
       [req.params.streakId, req.params.userId],
     );
 
@@ -284,8 +278,12 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    // Automatically uses process.env.GEMINI_API_KEY
-    const ai = new GoogleGenAI({});
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "Server Configuration Error: GEMINI_API_KEY is not set on Render." });
+    }
+
+    const ai = new GoogleGenAI({ apiKey: apiKey });
 
     // Pull out the user's latest text input string
     const latestMessage = history[history.length - 1].parts[0].text;
@@ -310,6 +308,7 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+// Fallback path handler to support client-side SPA routing routing if needed
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
 });
