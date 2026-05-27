@@ -160,15 +160,6 @@ window.sendMessage = sendMessage;
 window.quickReply = quickReply;
 
 
-// Expose sendMessage globally to ensure inline HTML tags click handlers find it
-window.sendMessage = sendMessage;
-function quickReply(message) {
-  const input = document.getElementById("userInput");
-  if (input) {
-    input.value = message;
-    sendMessage();
-  }
-}
 
 function talkToCounsellor() {
   alert(
