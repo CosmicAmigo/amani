@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql2/promise");
 const path = require("path");
 const app = express();
+const { GoogleGenAI } = require("@google/genai");
 
 // Middleware
 app.use(express.json());
@@ -283,6 +284,39 @@ app.delete("/api/users/:userId/streaks/:streakId", async (req, res) => {
 // Initialize and start server
 initializeDatabase()
   .then(() => {
+    app.post("/api/chat", async (req, res) => {
+  const { history } = req.body;
+
+  if (!history || !Array.isArray(history)) {
+    return res.status(400).json({ error: "Invalid conversation history format." });
+  }
+
+  try {
+    // Initializes automatically using process.env.GEMINI_API_KEY
+    const ai = new GoogleGenAI({});
+
+    // Pull out the user's latest text input string
+    const latestMessage = history[history.length - 1].parts[0].text;
+    
+    // Grab everything before the latest message to serve as context history
+    const pastConversations = history.slice(0, -1);
+
+    const chat = ai.chats.create({
+      model: "gemini-2.5-flash", // Cost-effective, high-speed model for web apps
+      history: pastConversations,
+      config: {
+        systemInstruction: "You are AMANI, a compassionate mental wellness assistant. Listen attentively, provide validation, and keep your responses supportive and focused on wellness."
+      }
+    });
+
+    const result = await chat.sendMessage({ message: latestMessage });
+    
+    res.json({ reply: result.text });
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    res.status(500).json({ error: "Failed to communicate with AMANI engine." });
+  }
+});
     app.listen(PORT, HOST, () => {
       console.log(`Server is running on ${HOST}:${PORT}`);
     });

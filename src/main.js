@@ -11,6 +11,7 @@ import {
   createStreak,
   updateStreak,
   endStreak,
+  sendChatMessageToAI,
 } from "./api.js";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -110,25 +111,45 @@ async function sendMessage() {
   const typingIndicator = document.getElementById("typingIndicator");
   if (typingIndicator) typingIndicator.style.display = "block";
 
-  // Simulate AMANI response
-  setTimeout(() => {
-    const responses = [
-      "I hear you. That sounds important. Tell me more.",
-      "Thank you for sharing. How does that make you feel?",
-      "I'm here to listen. What would help you right now?",
-      "That's a valid feeling. You're not alone.",
-      "I appreciate your trust in me. What can I do to help?",
-    ];
-    const response = responses[Math.floor(Math.random() * responses.length)];
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  if (!input) return;
+
+  const message = input.value.trim();
+  if (!message) return;
+
+  const chatBox = document.getElementById("chatBox");
+  if (chatBox) {
+    chatBox.innerHTML += `<div class="message-user"><strong>You:</strong> ${message}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Gemini looks for 'user' and 'model' roles
+  chatHistory.push({ role: "user", parts: [{ text: message }] });
+  input.value = "";
+
+  // Show typing indicator
+  const typingIndicator = document.getElementById("typingIndicator");
+  if (typingIndicator) typingIndicator.style.display = "block";
+
+  try {
+    // Send the entire conversation history to maintain context
+    const aiResponse = await sendChatMessageToAI(currentUserId || "guest_user", chatHistory);
 
     if (chatBox) {
-      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${response}</div>`;
+      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${aiResponse}</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    
+    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+  } catch (err) {
+    if (chatBox) {
+      chatBox.innerHTML += `<div class="message-ai" style="color: red;"><strong>System:</strong> Sorry, I couldn't connect to AMANI right now.</div>`;
+    }
+  } finally {
     if (typingIndicator) typingIndicator.style.display = "none";
-    chatHistory.push({ role: "assistant", content: response });
-  }, 800);
+  }
+}
 }
 
 function quickReply(message) {
