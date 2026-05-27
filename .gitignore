@@ -1,3 +1,5 @@
 \node_modules
 dist
 secret.env
+run-schema.js
+stuff.txt

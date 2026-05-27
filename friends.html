@@ -1,30 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Friends - AMANI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="app">
-    <div class="header">
-      <div class="title">AMANI</div>
-      <div class="subtitle">Friend Zone</div>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <div class="title">AMANI</div>
+        <div class="subtitle">Friend Zone</div>
+      </div>
+      <div class="content active" id="friendZone">
+        <h3>Friend Zone</h3>
+        <div id="friendsContainer">
+          <p>Loading friends...</p>
+        </div>
+        <button class="button" onclick="goHome()">Back</button>
+      </div>
     </div>
-    <div class="content active" id="friendZone">
-      <h3>Friend Zone</h3>
-      <ul class="friend-list" id="friendList">
-        <li class="online">Alex 🟢</li>
-        <li class="online">Sophia 🟢</li>
-        <li class="online">Jordan 🔵</li>
-        <li class="online">Riley 🟢</li>
-        <li class="online">Casey 🔵</li>
-      </ul>
-      <button class="button" onclick="goHome()">Back</button>
-    </div>
-  </div>
-  <script type="module" src="./src/main.js"></script>
-</body>
+    <script type="module" src="./src/main.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.loadUserFriends) {
+          window.loadUserFriends();
+        }
+      });
+    </script>
+  </body>
 </html>
