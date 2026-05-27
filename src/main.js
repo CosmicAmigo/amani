@@ -91,25 +91,10 @@ function parseJwt(token) {
   return JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
 }
 
-// Chat functionality
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  if (!input) return;
+// ==========================================
+// AMANI GEMINI AI CHAT FUNCTIONALITY
+// ==========================================
 
-  const message = input.value.trim();
-  if (!message) return;
-
-  const chatBox = document.getElementById("chatBox");
-  if (chatBox) {
-    chatBox.innerHTML += `<div class="message-user"><strong>You:</strong> ${message}</div>`;
-  }
-
-  chatHistory.push({ role: "user", content: message });
-  input.value = "";
-
-  // Show typing indicator
-  const typingIndicator = document.getElementById("typingIndicator");
-  if (typingIndicator) typingIndicator.style.display = "block";
 
 async function sendMessage() {
   const input = document.getElementById("userInput");
@@ -124,34 +109,124 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // Gemini looks for 'user' and 'model' roles
-  chatHistory.push({ role: "user", parts: [{ text: message }] });
   input.value = "";
+  chatHistory.push({ role: "user", parts: [{ text: message }] });
 
-  // Show typing indicator
   const typingIndicator = document.getElementById("typingIndicator");
   if (typingIndicator) typingIndicator.style.display = "block";
 
   try {
-    // Send the entire conversation history to maintain context
-    const aiResponse = await sendChatMessageToAI(currentUserId || "guest_user", chatHistory);
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId || "guest_user", 
+        history: chatHistory 
+      })
+    });
+
+    if (!response.ok) throw new Error("Server communication failure");
+    
+    const data = await response.json();
 
     if (chatBox) {
-      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${aiResponse}</div>`;
+      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${data.reply}</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
     }
     
-    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+    chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
+
   } catch (err) {
+    console.error("Chat routing error:", err);
     if (chatBox) {
-      chatBox.innerHTML += `<div class="message-ai" style="color: red;"><strong>System:</strong> Sorry, I couldn't connect to AMANI right now.</div>`;
+      chatBox.innerHTML += `<div class="message-ai" style="color: #ea4335;"><strong>System:</strong> Unable to reach AMANI right now.</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   } finally {
     if (typingIndicator) typingIndicator.style.display = "none";
   }
 }
+
+function quickReply(text) {
+  const input = document.getElementById("userInput");
+  if (input) {
+    input.value = text;
+    sendMessage(); 
+  }
 }
 
+// CRITICAL VITE FIX: Expose these functions to the global window object
+window.sendMessage = sendMessage;
+window.quickReply = quickReply;
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  if (!input) return;
+
+  const message = input.value.trim();
+  if (!message) return;
+
+  const chatBox = document.getElementById("chatBox");
+  if (chatBox) {
+    chatBox.innerHTML += `<div class="message-user"><strong>You:</strong> ${message}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Clear input field immediately for native chat UX
+  input.value = "";
+
+  // Append user message context tracking format required by Gemini
+  chatHistory.push({ role: "user", parts: [{ text: message }] });
+
+  // Handle typing loader visibility safely
+  const typingIndicator = document.getElementById("typingIndicator");
+  if (typingIndicator) typingIndicator.style.display = "block";
+
+  try {
+    // 1. Fetch your clean, newly corrected relative API path endpoint
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId || "guest_user", 
+        history: chatHistory 
+      })
+    });
+
+    if (!response.ok) throw new Error("Server communication failure");
+    
+    const data = await response.json();
+
+    // 2. Output the response into the UI box container
+    if (chatBox) {
+      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${data.reply}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    // Save AI message to history to preserve contextual threads
+    chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
+
+  } catch (err) {
+    console.error("Chat routing error:", err);
+    if (chatBox) {
+      chatBox.innerHTML += `<div class="message-ai" style="color: #ea4335;"><strong>System:</strong> Unable to reach AMANI wellness services right now.</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  } finally {
+    if (typingIndicator) typingIndicator.style.display = "none";
+  }
+}
+
+// Fixed Quick Reply Event Trigger
+window.quickReply = function(text) {
+  const input = document.getElementById("userInput");
+  if (input) {
+    input.value = text;
+    sendMessage(); // Programmatically execute the fixed message handler
+  }
+};
+
+// Expose sendMessage globally to ensure inline HTML tags click handlers find it
+window.sendMessage = sendMessage;
 function quickReply(message) {
   const input = document.getElementById("userInput");
   if (input) {
