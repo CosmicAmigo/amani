@@ -309,7 +309,7 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // Fallback path handler to support client-side SPA routing routing if needed
-app.get("*", (req, res) => {
+app.get("*catchall", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
 });
 
