@@ -1,11 +1,13 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
 const path = require("path");
-const app = express();
 const { GoogleGenAI } = require("@google/genai");
+
+const app = express();
 
 // Middleware
 app.use(express.json());
+
 // Serve the built frontend from the `dist` directory
 app.use(express.static(path.join(__dirname, "..", "dist")));
 
@@ -23,19 +25,12 @@ async function initializeDatabase() {
   }
 
   const parsed = new URL(dbUrl);
-  const user = parsed.username
-    ? decodeURIComponent(parsed.username)
-    : undefined;
-  const password = parsed.password
-    ? decodeURIComponent(parsed.password)
-    : undefined;
+  const user = parsed.username ? decodeURIComponent(parsed.username) : undefined;
+  const password = parsed.password ? decodeURIComponent(parsed.password) : undefined;
   const host = parsed.hostname;
   const port = parsed.port ? parseInt(parsed.port, 10) : 3306;
-  const database = parsed.pathname
-    ? parsed.pathname.replace(/^\//, "")
-    : undefined;
-  const sslMode =
-    parsed.searchParams.get("ssl-mode") || parsed.searchParams.get("sslmode");
+  const database = parsed.pathname ? parsed.pathname.replace(/^\//, "") : undefined;
+  const sslMode = parsed.searchParams.get("ssl-mode") || parsed.searchParams.get("sslmode");
 
   const poolOptions = {
     host,
@@ -55,7 +50,9 @@ async function initializeDatabase() {
   pool = mysql.createPool(poolOptions);
 }
 
-// API Routes
+// ==========================================
+// STANDARD DATABASE API ROUTES
+// ==========================================
 
 // Get user profile
 app.get("/api/users/:userId", async (req, res) => {
@@ -219,10 +216,8 @@ app.post("/api/users/:userId/streaks", async (req, res) => {
   try {
     const { substance_or_behavior } = req.body;
     const connection = await pool.getConnection();
-
     const today = new Date().toISOString().split("T")[0];
 
-    // Try to insert, or update if exists
     await connection.execute(
       `INSERT INTO abstinence_streaks (user_id, substance_or_behavior, start_date, current_streak_days, last_checked, is_active)
        VALUES (?, ?, ?, ?, ?, 1)
@@ -281,10 +276,7 @@ app.delete("/api/users/:userId/streaks/:streakId", async (req, res) => {
   }
 });
 
-// Initialize and start server
-initializeDatabase()
-  .then(() => {
-    app.post("/api/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   const { history } = req.body;
 
   if (!history || !Array.isArray(history)) {
@@ -292,7 +284,7 @@ initializeDatabase()
   }
 
   try {
-    // Initializes automatically using process.env.GEMINI_API_KEY
+    // Automatically uses process.env.GEMINI_API_KEY
     const ai = new GoogleGenAI({});
 
     // Pull out the user's latest text input string
@@ -302,7 +294,7 @@ initializeDatabase()
     const pastConversations = history.slice(0, -1);
 
     const chat = ai.chats.create({
-      model: "gemini-2.5-flash", // Cost-effective, high-speed model for web apps
+      model: "gemini-2.5-flash",
       history: pastConversations,
       config: {
         systemInstruction: "You are AMANI, a compassionate mental wellness assistant. Listen attentively, provide validation, and keep your responses supportive and focused on wellness."
@@ -317,6 +309,13 @@ initializeDatabase()
     res.status(500).json({ error: "Failed to communicate with AMANI engine." });
   }
 });
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
+});
+
+initializeDatabase()
+  .then(() => {
     app.listen(PORT, HOST, () => {
       console.log(`Server is running on ${HOST}:${PORT}`);
     });
