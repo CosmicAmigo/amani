@@ -42,6 +42,27 @@ async function initializeApp() {
   await renderLobbyMessages();
   updateLobbyIdentityPreview();
   renderDashboardUserInfo();
+  runStartupSplash();
+}
+
+function runStartupSplash() {
+  const splash = document.querySelector(".splash");
+  if (!splash) return;
+
+  setTimeout(() => {
+    splash.style.pointerEvents = "none";
+  }, 3300);
+
+  setTimeout(() => {
+    const path = window.location.pathname;
+    if (
+      path.endsWith("index.html") ||
+      path.endsWith("/") ||
+      path === ""
+    ) {
+      window.location.href = "home.html";
+    }
+  }, 4200);
 }
 
 function wireGlobalHandlers() {
