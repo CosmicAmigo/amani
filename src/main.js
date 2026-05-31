@@ -121,17 +121,28 @@ async function sendMessage() {
   if (typingIndicator) typingIndicator.style.display = "block";
 
   try {
-    const reply = await sendChatMessageToAI(currentUserId || "guest_user", chatHistory);
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId || "guest_user", 
+        history: chatHistory 
+      })
+    });
+
+    if (!response.ok) throw new Error("Server communication failure");
+    
+    const data = await response.json();
 
     if (chatBox) {
-      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${reply}</div>`;
+      chatBox.innerHTML += `<div class="message-ai"><strong>AMANI:</strong> ${data.reply}</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
     }
     
-    chatHistory.push({ role: "model", parts: [{ text: reply }] });
+    chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
 
   } catch (err) {
-    console.error("Chat error:", err);
+    console.error("Chat routing error:", err);
     if (chatBox) {
       chatBox.innerHTML += `<div class="message-ai" style="color: #ea4335;"><strong>System:</strong> Unable to reach AMANI right now.</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
