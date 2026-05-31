@@ -273,38 +273,65 @@ app.delete("/api/users/:userId/streaks/:streakId", async (req, res) => {
 app.post("/api/chat", async (req, res) => {
   const { history } = req.body;
 
-  if (!history || !Array.isArray(history)) {
+  if (!history || !Array.isArray(history) || history.length === 0) {
     return res.status(400).json({ error: "Invalid conversation history format." });
   }
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: "Server Configuration Error: GEMINI_API_KEY is not set on Render." });
+      console.warn("GEMINI_API_KEY is not configured. Falling back to a safe local response.");
+      return res.json({ reply: "Hi there! I’m here to listen. Tell me more about how you’re feeling, and I’ll support you as best I can." });
     }
 
-    const ai = new GoogleGenAI({ apiKey: apiKey });
+    const ai = new GoogleGenAI({ apiKey });
 
-    // Pull out the user's latest text input string
-    const latestMessage = history[history.length - 1].parts[0].text;
-    
-    // Grab everything before the latest message to serve as context history
-    const pastConversations = history.slice(0, -1);
+    const systemMessage = {
+      role: "system",
+      content:
+        "You are AMANI, a compassionate mental wellness assistant. Listen attentively, provide validation, and keep your responses supportive and focused on wellness.",
+    };
 
-    const chat = ai.chats.create({
-      model: "gemini-2.5-flash",
-      history: pastConversations,
-      config: {
-        systemInstruction: "You are AMANI, a compassionate mental wellness assistant. Listen attentively, provide validation, and keep your responses supportive and focused on wellness."
-      }
+    const input = history.map((entry) => {
+      const text = Array.isArray(entry.parts)
+        ? entry.parts.map((part) => part.text).join(" ")
+        : "";
+
+      return {
+        role: entry.role === "model" ? "assistant" : "user",
+        content: text,
+      };
     });
 
-    const result = await chat.sendMessage({ message: latestMessage });
-    
-    res.json({ reply: result.text });
+    const response = await ai.responses.create({
+      model: "gemini-2.5-flash",
+      input: [systemMessage, ...input],
+    });
+
+    const reply =
+      response.outputText ||
+      (Array.isArray(response.output)
+        ? response.output
+            .flatMap((item) => {
+              if (typeof item === "string") return [item];
+              if (item.content) {
+                if (typeof item.content === "string") return [item.content];
+                if (Array.isArray(item.content)) return item.content.map((c) => c.text || "");
+              }
+              return [];
+            })
+            .join(" ")
+        : "");
+
+    if (!reply) {
+      console.warn("Gemini response did not contain a reply. Falling back to a safe message.");
+      return res.json({ reply: "I’m sorry, I didn’t catch that. Can you share a little more about how you’re feeling?" });
+    }
+
+    res.json({ reply });
   } catch (error) {
     console.error("Gemini API Error:", error);
-    res.status(500).json({ error: "Failed to communicate with AMANI engine." });
+    res.json({ reply: "I’m having trouble connecting to AMANI right now. Please try again in a moment." });
   }
 });
 

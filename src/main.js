@@ -41,6 +41,7 @@ async function initializeApp() {
   wireGoogleLogin();
   await renderLobbyMessages();
   updateLobbyIdentityPreview();
+  renderDashboardUserInfo();
 }
 
 function wireGlobalHandlers() {
@@ -61,6 +62,9 @@ function wireGlobalHandlers() {
   window.updateStreakDays = updateStreakDays;
   window.completeStreak = completeStreak;
   window.loadUserFriends = loadUserFriends;
+  window.renderDashboardUserInfo = renderDashboardUserInfo;
+  window.signOut = signOut;
+  window.openDashboard = () => (window.location.href = "dashboard.html");
 }
 
 function wireGoogleLogin() {
@@ -76,6 +80,7 @@ function wireGoogleLogin() {
       currentUserId = Math.random().toString();
       saveState();
       updateLobbyIdentityPreview();
+      renderDashboardUserInfo();
     },
   });
 
@@ -268,6 +273,38 @@ function updateLobbyIdentityPreview() {
   badge.textContent = currentUser
     ? `Signed in: ${currentUser.name || currentUser.email}`
     : "Not signed in (you can still post anonymously)";
+}
+
+function renderDashboardUserInfo() {
+  const container = document.getElementById("dashboardInfo");
+  if (!container) return;
+
+  if (currentUser) {
+    container.innerHTML = `
+      <div class="dashboard-card">
+        <h3>Welcome back, ${currentUser.name || currentUser.email}!</h3>
+        <p><strong>Email:</strong> ${currentUser.email || "Unknown"}</p>
+        <p><strong>User ID:</strong> ${currentUserId}</p>
+        <p>Use the buttons below to access your chat, community lobby, friends, and progress pages.</p>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="dashboard-card">
+        <h3>Sign in to personalize your AMANI experience</h3>
+        <p>Once signed in, you can access your account, post with your name, and load your saved progress.</p>
+      </div>
+    `;
+  }
+}
+
+function signOut() {
+  currentUser = null;
+  currentUserId = null;
+  localStorage.removeItem("amani-current-user");
+  localStorage.removeItem("amani-user-id");
+  updateLobbyIdentityPreview();
+  renderDashboardUserInfo();
 }
 
 async function renderLobbyMessages() {

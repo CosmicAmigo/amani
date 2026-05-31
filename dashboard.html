@@ -3,11 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>You - AMANI</title>
+    <title>Your Account - AMANI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-    
+  <div class="app">
+    <div class="header">
+      <div class="title">AMANI</div>
+      <div class="subtitle">Your Account</div>
+    </div>
+    <div class="content active" id="dashboard">
+      <div id="googleSignIn"></div>
+      <p id="identityBadge">Loading account info...</p>
+
+      <div id="dashboardInfo"></div>
+
+      <div class="button-grid">
+        <button class="button" onclick="openChat()">💬 Talk to AMANI</button>
+        <button class="button" onclick="openLobby()">🗣️ Community Lobby</button>
+        <button class="button" onclick="openFriendZone()">🤝 Friend Zone</button>
+        <button class="button" onclick="openProgress()">📊 My Progress</button>
+      </div>
+
+      <button class="button secondary" onclick="signOut()">Sign out</button>
+      <button class="button" onclick="goHome()">Back</button>
+    </div>
+  </div>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>
